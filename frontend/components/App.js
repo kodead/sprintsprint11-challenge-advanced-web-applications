@@ -100,7 +100,7 @@ export default function App() {
       const token = getToken();
       const response = await fetch(articlesUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json', Authorization: token },
         body: JSON.stringify(article),
       });
 
@@ -128,7 +128,7 @@ export default function App() {
       const token = getToken();
       const response = await fetch(`${articlesUrl}/${article_id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json', Authorization: token },
         body: JSON.stringify(article),
       });
 
@@ -158,7 +158,7 @@ export default function App() {
       const token = getToken();
       const response = await fetch(`${articlesUrl}/${article_id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: token },
       });
 
       if (response.ok) {
