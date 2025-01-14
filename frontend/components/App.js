@@ -42,6 +42,7 @@ export default function App() {
       if (response.ok) {
         const { token, message } = await response.json();
         localStorage.setItem('token', token);
+        localStorage.setItem('username', username);
         setMessage(message);
         redirectToArticles();
       } else {
@@ -59,7 +60,7 @@ export default function App() {
   const getArticles = async () => {
     setMessage('');
     setSpinnerOn(true);
-
+    const username = localStorage.getItem('username');
     const token = getToken();
     if (!token) {
       setMessage('Unauthorized! Please log in again.');
@@ -76,7 +77,8 @@ export default function App() {
       if (response.ok) {
         const fetchedArticles = await response.json();
         setArticles(fetchedArticles.articles);
-        setMessage('Articles retrieved successfully.');
+        
+        setMessage(fetchedArticles.message);
       } else if (response.status === 401) {
         setMessage('Unauthorized! Please log in again.');
         redirectToLogin();
@@ -108,6 +110,7 @@ export default function App() {
         const { message, article: newArticle } = await response.json();
         setArticles((prevArticles) => [...prevArticles, newArticle]);
         setMessage(message);
+        console.log(message)
       } else {
         const error = await response.json();
         setMessage(error.message);
