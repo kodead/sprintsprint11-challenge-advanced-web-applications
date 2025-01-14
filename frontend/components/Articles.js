@@ -2,7 +2,19 @@ import React, { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import PT from 'prop-types'
 
-export default function Articles(props) {
+export default function Articles({ 
+  articles,
+  getArticles,
+  deleteArticle,
+  setCurrentArticleId,
+
+
+}) {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    return <Navigate to="/login" replace />;
+
+  }
   // ✨ where are my props? Destructure them here
 
   // ✨ implement conditional logic: if no token exists
@@ -10,7 +22,9 @@ export default function Articles(props) {
 
   useEffect(() => {
     // ✨ grab the articles here, on first render only
-  })
+    console.log('Articles:', articles);
+    getArticles(); 
+  }, [])
 
   return (
     // ✨ fix the JSX: replace `Function.prototype` with actual functions
@@ -18,10 +32,9 @@ export default function Articles(props) {
     <div className="articles">
       <h2>Articles</h2>
       {
-        ![].length
+        articles.length === 0
           ? 'No articles yet'
-          : [].map(art => {
-            return (
+          : articles.map(art => (
               <div className="article" key={art.article_id}>
                 <div>
                   <h3>{art.title}</h3>
@@ -29,12 +42,12 @@ export default function Articles(props) {
                   <p>Topic: {art.topic}</p>
                 </div>
                 <div>
-                  <button disabled={true} onClick={Function.prototype}>Edit</button>
-                  <button disabled={true} onClick={Function.prototype}>Delete</button>
+                  <button onClick={() => setCurrentArticleId(art.article_id)}>Edit</button>
+                  <button onClick={() => deleteArticle(art.article_id)}>Delete</button>
                 </div>
               </div>
             )
-          })
+          )
       }
     </div>
   )
