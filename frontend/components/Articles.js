@@ -1,56 +1,44 @@
-import React, { useEffect } from 'react'
-import { Navigate } from 'react-router-dom'
-import PT from 'prop-types'
+import React, { useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
+import PT from 'prop-types';
 
-export default function Articles({ 
-  articles,
-  getArticles,
-  deleteArticle,
-  setCurrentArticleId,
-
-
-}) {
-  const token = localStorage.getItem('token')
-  if (!token) {
-    return <Navigate to="/login" replace />;
-
-  }
-  // ✨ where are my props? Destructure them here
-
-  // ✨ implement conditional logic: if no token exists
-  // we should render a Navigate to login screen (React Router v.6)
+export default function Articles({ articles, getArticles, deleteArticle, setCurrentArticleId }) {
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    // ✨ grab the articles here, on first render only
-    console.log('Articles:', articles);
-    getArticles(); 
-  }, [])
+    // Fetch articles only on the first render
+    if (token) {
+      getArticles();
+    }
+  }, [getArticles, token]);
+
+  if (!token) {
+    // Redirect to login screen if no token exists
+    return <Navigate to="/login" replace />;
+  }
 
   return (
-    // ✨ fix the JSX: replace `Function.prototype` with actual functions
-    // and use the articles prop to generate articles
     <div className="articles">
       <h2>Articles</h2>
-      {
-        articles.length === 0
-          ? 'No articles yet'
-          : articles.map(art => (
-              <div className="article" key={art.article_id}>
-                <div>
-                  <h3>{art.title}</h3>
-                  <p>{art.text}</p>
-                  <p>Topic: {art.topic}</p>
-                </div>
-                <div>
-                  <button onClick={() => setCurrentArticleId(art.article_id)}>Edit</button>
-                  <button onClick={() => deleteArticle(art.article_id)}>Delete</button>
-                </div>
-              </div>
-            )
-          )
-      }
+      {articles.length === 0 ? (
+        <p>No articles yet</p>
+      ) : (
+        articles.map((article) => (
+          <div className="article" key={article.article_id}>
+            <div>
+              <h3>{article.title}</h3>
+              <p>{article.text}</p>
+              <p>Topic: {article.topic}</p>
+            </div>
+            <div>
+              <button onClick={() => setCurrentArticleId(article.article_id)}>Edit</button>
+              <button onClick={() => deleteArticle(article.article_id)}>Delete</button>
+            </div>
+          </div>
+        ))
+      )}
     </div>
-  )
+  );
 }
 
 // 🔥 No touchy: Articles expects the following props exactly:
