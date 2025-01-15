@@ -60,7 +60,7 @@ export default function App() {
   const getArticles = async () => {
     setMessage('');
     setSpinnerOn(true);
-    const username = localStorage.getItem('username');
+    
     const token = getToken();
     if (!token) {
       setMessage('Unauthorized! Please log in again.');
@@ -123,35 +123,38 @@ export default function App() {
     }
   };
 
-  const updateArticle = async ({ article_id, article }) => {
-    setMessage('');
-    setSpinnerOn(true);
+  const updateArticle = async ({ article_id, title, text, topic }) => {
+  setMessage('');
+  setSpinnerOn(true);
 
-    try {
-      const token = getToken();
-      const response = await fetch(`${articlesUrl}/${article_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: token },
-        body: JSON.stringify(article),
-      });
+  try {
+    const token = getToken();
+    const response = await fetch(`${articlesUrl}/${article_id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: token },
+      body: JSON.stringify({ title, text, topic }),
+    });
 
-      if (response.ok) {
-        const { message, article: updatedArticle } = await response.json();
-        setArticles((prevArticles) =>
-          prevArticles.map((art) => (art.article_id === article_id ? updatedArticle : art))
-        );
-        setMessage(message);
-      } else {
-        const error = await response.json();
-        setMessage(error.message);
-      }
-    } catch (error) {
-      console.error('Failed to update article:', error);
-      setMessage('An error occurred while updating the article.');
-    } finally {
-      setSpinnerOn(false);
+    if (response.ok) {
+      const { article: updatedArticle } = await response.json();
+      setArticles((prevArticles) =>
+        prevArticles.map((art) => (art.article_id === article_id ? updatedArticle : art))
+      );
+
+      // Use the username stored in localStorage for the message
+      const username = localStorage.getItem('username');
+      setMessage(`Nice update, ${username}!`);
+    } else {
+      const error = await response.json();
+      setMessage(error.message);
     }
-  };
+  } catch (error) {
+    console.error('Failed to update article:', error);
+    setMessage('An error occurred while updating the article.');
+  } finally {
+    setSpinnerOn(false);
+  }
+};
 
   const deleteArticle = async (article_id) => {
     setMessage('');
@@ -208,6 +211,7 @@ export default function App() {
                   <ArticleForm
                     postArticle={postArticle}
                     updateArticle={updateArticle}
+                    setCurrentArticleId={setCurrentArticleId}
                     currentArticle={articles.find((art) => art.article_id === currentArticleId)}
                   />
                   <Articles
