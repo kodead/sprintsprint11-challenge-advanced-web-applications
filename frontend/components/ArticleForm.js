@@ -25,15 +25,24 @@ export default function ArticleForm({ postArticle, updateArticle, setCurrentArti
 
   const onSubmit = evt => {
     evt.preventDefault();
+
     if (currentArticle) {
       updateArticle({
         article_id: currentArticle.article_id,
         ...values,
+        title: values.title,
+        text: values.text,
+        topic: values.topic,
       });
     } else {
       postArticle(values);
     }
+
+    // Reset the form to its initial values
     setValues(initialFormValues);
+
+    // Clear the current article (switch back to "Create" mode)
+    setCurrentArticleId(null);
   };
 
   const isDisabled = () => !values.title.trim() || !values.text.trim() || !values.topic.trim();
@@ -65,7 +74,10 @@ export default function ArticleForm({ postArticle, updateArticle, setCurrentArti
         <button disabled={isDisabled()} id="submitArticle">
           Submit
         </button>
-        <button type="button" onClick={() => setCurrentArticleId(null)}>
+        <button type="button" onClick={() => {
+          setValues(initialFormValues);
+          setCurrentArticleId(null);
+        }}>
           Cancel edit
         </button>
       </div>
@@ -73,15 +85,14 @@ export default function ArticleForm({ postArticle, updateArticle, setCurrentArti
   );
 }
 
-// 🔥 No touchy: ArticleForm expects the following props exactly:
 ArticleForm.propTypes = {
   postArticle: PT.func.isRequired,
   updateArticle: PT.func.isRequired,
   setCurrentArticleId: PT.func.isRequired,
-  currentArticle: PT.shape({ // can be null or undefined, meaning "create" mode (as opposed to "update")
+  currentArticle: PT.shape({
     article_id: PT.number.isRequired,
     title: PT.string.isRequired,
     text: PT.string.isRequired,
     topic: PT.string.isRequired,
-  })
-}
+  }),
+};
